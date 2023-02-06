@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	defaultRetryDuration = 3 * time.Second
+	defaultRecoverDuration = 3 * time.Second
 )
 
 // Service is an interface that represents a service that can be ran as
@@ -78,7 +78,7 @@ type ServiceGroup map[string]Service
 // SG3 -> SG2 -> SG1.
 func Run(ctx context.Context, opts Options, groups []ServiceGroup) {
 	if opts.RecoverDuration <= 0 {
-		opts.RecoverDuration = defaultRetryDuration
+		opts.RecoverDuration = defaultRecoverDuration
 	}
 
 	var wg sync.WaitGroup
@@ -115,13 +115,7 @@ func (sg ServiceGroup) run(ctx context.Context, opts Options) {
 	runService := func(name string, service Service) {
 		defer wg.Done()
 
-		var retries int
-
-		retry(ctx, func() (retry bool) {
-			defer func() {
-				retries++
-			}()
-
+		retry(ctx, opts.RecoverDuration, func() (retry bool) {
 			defer func() {
 				if val := recover(); val != nil {
 					retry = true
@@ -150,7 +144,7 @@ func (sg ServiceGroup) run(ctx context.Context, opts Options) {
 	wg.Wait()
 }
 
-func retry(ctx context.Context, fn func() bool) {
+func retry(ctx context.Context, intv time.Duration, fn func() bool) {
 	tm := time.NewTimer(0)
 
 	cleanup := func() {
