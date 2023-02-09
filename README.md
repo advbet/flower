@@ -113,21 +113,21 @@ func main() {
 		port: 4212,
 	}
 
-	smesh.Run(ctx, opts, []smesh.ServiceGroup {
-		{
+	smesh.Run(ctx, opts, {
+		smesh.ServiceGroup{
 			"db": smesh.ServiceCloser(func() {
 				db.Close()
 			}),
 		},
-		{
+		smesh.ServiceGroup{
 			"redis": smesh.ServiceCloser(func() {
 				redis.Close()
 			}),
 		},
-		{
+		smesh.ServiceGroup{
 			"emailWorker": ew,
 		},
-		{
+		smesh.ServiceGroup{
 			"server": s,
 		},
 	})

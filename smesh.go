@@ -55,7 +55,7 @@ type Options struct {
 
 	// OnServicePanic is a function that is executed when a service
 	// panics.
-	OnServicePanic func(naem string, stack []byte)
+	OnServicePanic func(name string, stack []byte)
 }
 
 // ServiceGroup represents a group of services where the key is service
@@ -76,7 +76,7 @@ type ServiceGroup map[string]Service
 // following sequence: SG1 -> SG2 -> SG3.
 // When ctx is cancelled, it will shut down in the following order:
 // SG3 -> SG2 -> SG1.
-func Run(ctx context.Context, opts Options, groups []ServiceGroup) {
+func Run(ctx context.Context, opts Options, groups ...ServiceGroup) {
 	if opts.RecoverDuration <= 0 {
 		opts.RecoverDuration = defaultRecoverDuration
 	}
