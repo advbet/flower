@@ -45,13 +45,13 @@ type Options struct {
 	// will attempt to recover after panic.
 	RecoverDuration time.Duration
 
-	// OnServiceStarting is a function that is executed when a service
+	// OnServiceStart is a function that is executed when a service
 	// is about to start.
-	OnServiceStarting func(name string)
+	OnServiceStart func(name string)
 
-	// OnServiceStopped is a function that is executed when a service
+	// OnServiceStop is a function that is executed when a service
 	// stops. It is not invoked after a panic.
-	OnServiceStopped func(name string)
+	OnServiceStop func(name string)
 
 	// OnServicePanic is a function that is executed when a service
 	// panics.
@@ -123,14 +123,14 @@ func (sg ServiceGroup) run(ctx context.Context, opts Options) {
 				}
 			}()
 
-			if opts.OnServiceStarting != nil {
-				opts.OnServiceStarting(name)
+			if opts.OnServiceStart != nil {
+				opts.OnServiceStart(name)
 			}
 
 			service.Run(ctx)
 
-			if opts.OnServiceStopped != nil {
-				opts.OnServiceStopped(name)
+			if opts.OnServiceStop != nil {
+				opts.OnServiceStop(name)
 			}
 
 			return retry
