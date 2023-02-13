@@ -161,7 +161,7 @@ func retry(ctx context.Context, intv time.Duration, fn func() bool) {
 	defer cleanup()
 
 	for fn() {
-		tm.Reset(time.Second * 3)
+		tm.Reset(intv)
 
 		select {
 		case <-tm.C:
