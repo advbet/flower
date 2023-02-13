@@ -113,7 +113,7 @@ func main() {
 		port: 4212,
 	}
 
-	smesh.Run(ctx, opts, {
+	smesh.Run(ctx, opts,
 		smesh.ServiceGroup{
 			"db": smesh.ServiceCloser(func() {
 				db.Close()
@@ -130,7 +130,7 @@ func main() {
 		smesh.ServiceGroup{
 			"server": s,
 		},
-	})
+	)
 
 	fmt.Println("gracefully closed")
 }
