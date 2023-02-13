@@ -16,9 +16,6 @@ const (
 type Service interface {
 	// Run should run the service with the provided context and logger.
 	// If context is cancelled, the service should close gracefully.
-	// If the service cannot continue running for some reason, it should
-	// return an error; upon an error, there can be attempts to retry
-	// running the service.
 	Run(context.Context)
 }
 
@@ -45,17 +42,17 @@ type Options struct {
 	// will attempt to recover after panic.
 	RecoverDuration time.Duration
 
-	// OnServiceStart is a function that is executed when a service
+	// BeforeServiceStart is a function that is executed when a service
 	// is about to start.
-	OnServiceStart func(name string)
+	BeforeServiceStart func(name string)
 
-	// OnServiceStop is a function that is executed when a service
+	// AfterServiceStop is a function that is executed when a service
 	// stops. It is not invoked after a panic.
-	OnServiceStop func(name string)
+	AfterServiceStop func(name string)
 
-	// OnServicePanic is a function that is executed when a service
+	// AfterServicePanic is a function that is executed when a service
 	// panics.
-	OnServicePanic func(name string, stack []byte)
+	AfterServicePanic func(name string, stack []byte)
 }
 
 // ServiceGroup represents a group of services where the key is service
@@ -76,6 +73,8 @@ type ServiceGroup map[string]Service
 // following sequence: SG1 -> SG2 -> SG3.
 // When ctx is cancelled, it will shut down in the following order:
 // SG3 -> SG2 -> SG1.
+// In case any service during runtime panics, it will restart it with
+// the provided RecoverDuration (or default, if not set).
 func Run(ctx context.Context, opts Options, groups ...ServiceGroup) {
 	if opts.RecoverDuration <= 0 {
 		opts.RecoverDuration = defaultRecoverDuration
@@ -119,18 +118,20 @@ func (sg ServiceGroup) run(ctx context.Context, opts Options) {
 			defer func() {
 				if val := recover(); val != nil {
 					retry = true
-					opts.OnServicePanic(name, debug.Stack())
+					if opts.AfterServicePanic != nil {
+						opts.AfterServicePanic(name, debug.Stack())
+					}
 				}
 			}()
 
-			if opts.OnServiceStart != nil {
-				opts.OnServiceStart(name)
+			if opts.BeforeServiceStart != nil {
+				opts.BeforeServiceStart(name)
 			}
 
 			service.Run(ctx)
 
-			if opts.OnServiceStop != nil {
-				opts.OnServiceStop(name)
+			if opts.AfterServiceStop != nil {
+				opts.AfterServiceStop(name)
 			}
 
 			return retry
