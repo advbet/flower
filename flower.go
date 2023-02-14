@@ -1,4 +1,4 @@
-package smesh
+package flower
 
 import (
 	"context"
@@ -36,7 +36,7 @@ func ServiceCloser(closeFn func()) Service {
 }
 
 // Options specifies additional options that can be provided when running
-// a service mesh
+// flower.
 type Options struct {
 	// RecoverDuration specifies the duration after which a service
 	// will attempt to recover after panic.

@@ -1,3 +1,3 @@
-module github.com/advbet/smesh
+module github.com/advbet/flower
 
 go 1.19

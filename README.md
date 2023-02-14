@@ -1,8 +1,8 @@
-`smesh` (_service mesh_) is a package that provides an idiomatic, simple and an expressive way of defining how services (goroutines) should be started and gracefully closed. 
+`flower` (_flow er_) is a package that provides an idiomatic, simple and an expressive way of defining how services (goroutines) should be started and gracefully closed. 
 
 ## Install
 
-`go get -u github.com/advbet/smesh`
+`go get -u github.com/advbet/flower`
 
 ## Examples
 
@@ -25,7 +25,7 @@ in opposite direction. This means that our services run in a LIFO manner.
 3) Redis (no other service will now require redis)
 4) MySQL (same idea as redis)
 
-Using `smesh`, this flow could be expressed as following:
+Using `flower`, this flow could be expressed as following:
 
 ```go
 package main
@@ -103,7 +103,7 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT)
 	defer cancel()
 
-	opts := smesh.Options {
+	opts := flower.Options {
 		OnServiceStarting: func(s string) {
 			fmt.Println(s)
 		},
@@ -113,21 +113,21 @@ func main() {
 		port: 4212,
 	}
 
-	smesh.Run(ctx, opts,
-		smesh.ServiceGroup{
-			"db": smesh.ServiceCloser(func() {
+	flower.Run(ctx, opts,
+		flower.ServiceGroup{
+			"db": flower.ServiceCloser(func() {
 				db.Close()
 			}),
 		},
-		smesh.ServiceGroup{
-			"redis": smesh.ServiceCloser(func() {
+		flower.ServiceGroup{
+			"redis": flower.ServiceCloser(func() {
 				redis.Close()
 			}),
 		},
-		smesh.ServiceGroup{
+		flower.ServiceGroup{
 			"emailWorker": ew,
 		},
-		smesh.ServiceGroup{
+		flower.ServiceGroup{
 			"server": s,
 		},
 	)
