@@ -39,6 +39,7 @@ import (
 	"net/http"
 	"time"
 	"fmt"
+	"github.com/advbet/flower"
 )
 
 type emailWorker struct {
