@@ -26,6 +26,15 @@ func (f serviceFunc) Run(ctx context.Context) {
 	f(ctx)
 }
 
+// ServiceFunc is a wrapper around a service function that enables it to
+// behave like a Service.
+type ServiceFunc func(context.Context)
+
+// Run runs the provided service.
+func (sf ServiceFunc) Run(ctx context.Context) {
+	sf(ctx)
+}
+
 // ServiceCloser returns a closing service that should perform the closing
 // function when the service is deemed to be closed.
 func ServiceCloser(closeFn func()) Service {
