@@ -22,8 +22,6 @@ in opposite direction. This means that our services run in a LIFO manner.
 
 1) HTTP server (we finish current requests and close all incoming ones)
 2) Email worker (finish sending last emails)
-3) Redis (no other service will now require redis)
-4) MySQL (same idea as redis)
 
 Using `flower`, this flow could be expressed as following:
 
@@ -91,9 +89,13 @@ func main() {
 		panic(err)
 	}
 
+	defer db.Close()
+
 	redis := redis.NewClient(&redis.Options{
 		Addr: "localhost:6379",
 	})	
+
+	defer redis.Close()
 
 	ew := &emailWorker {
 		db: db,
@@ -115,16 +117,6 @@ func main() {
 	}
 
 	flower.Run(ctx, opts,
-		flower.ServiceGroup{
-			"db": flower.ServiceCloser(func() {
-				db.Close()
-			}),
-		},
-		flower.ServiceGroup{
-			"redis": flower.ServiceCloser(func() {
-				redis.Close()
-			}),
-		},
 		flower.ServiceGroup{
 			"emailWorker": ew,
 		},
