@@ -19,6 +19,15 @@ type Service interface {
 	Run(context.Context)
 }
 
+// ServiceFunc is a wrapper around a service function that enables it to
+// behave like a Service.
+type ServiceFunc func(context.Context)
+
+// Run runs the provided service.
+func (sf ServiceFunc) Run(ctx context.Context) {
+	sf(ctx)
+}
+
 // Options specifies additional options that can be provided when running
 // flower.
 type Options struct {
