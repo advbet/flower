@@ -2,6 +2,9 @@
 `flower` (_flow er_) is a package that provides an idiomatic, simple and an expressive way of defining how services (goroutines) should be started and gracefully closed. 
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/advbet/flower.svg)](https://pkg.go.dev/github.com/advbet/flower)
+[![Build Status](https://github.com/advbet/flower/actions/workflows/go.yml/badge.svg)](https://github.com/advbet/flower/actions/workflows/go.yml)
+[![Coverage Status](https://coveralls.io/repos/github/advbet/flower/badge.svg?branch=main)](https://coveralls.io/github/advbet/flower?branch=main)
+[![Go Report Card](https://goreportcard.com/badge/github.com/advbet/flower)](https://goreportcard.com/report/github.com/advbet/flower)
 
 ## Features
 
