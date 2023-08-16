@@ -1,10 +1,20 @@
+# Flower
 `flower` (_flow er_) is a package that provides an idiomatic, simple and an expressive way of defining how services (goroutines) should be started and gracefully closed. 
 
-## Install
+[![Go Reference](https://pkg.go.dev/badge/github.com/advbet/flower.svg)](https://pkg.go.dev/github.com/advbet/flower)
+
+## Features
+
+* Simple API
+* Uses `context.Context`
+* Hookable functions (e.g. `BeforeServiceStart`)
+* Configurable panic recovery
+
+## Installing
 
 `go get -u github.com/advbet/flower`
 
-## Examples
+## Idea
 
 Let us say that we have some kind of MySQL database, Redis, email worker and 
 a HTTP server. Intuitively, we should start these services in the following 
@@ -18,10 +28,13 @@ start email worker)
 
 Naturally, the order in which the services are closed should be similar to 
 the order in which the services were started in. However, they should start 
-in opposite direction. This means that our services run in a LIFO manner.
+in opposite direction. This means that our services run in a LIFO manner; 
+services should close in the opposite direction:
 
 1) HTTP server (we finish current requests and close all incoming ones)
 2) Email worker (finish sending last emails)
+3) Redis (close cache connection)
+4) MySQL (we no longer need the database)
 
 Using `flower`, this flow could be expressed as following:
 
@@ -128,6 +141,12 @@ func main() {
 	fmt.Println("gracefully closed")
 }
 ```
+
+The key concept comes from flower's `ServiceGroup` structure. It is a unit that is composed 
+out of many services (goroutines). Within a service group, all goroutines start/close 
+nondeterministically. However, the order of service groups are respected; each service 
+group will start only after the previous group has started, and will close only when 
+the superseding service group is closed.
 
 ## Important
 
