@@ -23,7 +23,7 @@ The key concept comes from flower's `ServiceGroup` structure. It is a unit that 
 out of many services (goroutines). Within a service group, all goroutines start/close 
 nondeterministically. However, the order of service groups are respected; each service 
 group will start only after the previous group has started, and will close only when 
-the superseding service group is closed. See `_example` for more details.
+the superseding service group is closed. See [_example](https://github.com/advbet/flower/blob/main/_example/) for more details.
 
 ## Important
 
