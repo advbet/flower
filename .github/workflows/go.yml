@@ -24,8 +24,3 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: latest
-
-      - name: submit coverage
-        uses: shogo82148/actions-goveralls@v1
-        with:
-          path-to-profile: covprofile
