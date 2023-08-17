@@ -1,18 +1,31 @@
 name: Go
-on: [push, pull_request]
+
+on: [push]
+
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: ^1.20
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Run tests
-      run: go test -race -shuffle on -timeout 1m -coverprofile=covprofile ./...
-    - name: Send coverage 
-      uses: shogo82148/actions-goveralls@v1
-      with:
-        path-to-profile: covprofile 
+      - uses: actions/checkout@v3
+
+      - name: setup go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: test
+        run: go test -race -shuffle on -timeout 1m -coverprofile=covprofile ./...
+
+      - name: build
+        run: go build -race ./...
+
+      - name: lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+
+      - name: submit coverage
+        uses: shogo82148/actions-goveralls@v1
+        with:
+          path-to-profile: covprofile
