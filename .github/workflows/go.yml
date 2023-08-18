@@ -24,3 +24,9 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: latest
+
+      - name: submit coverage
+        uses: coverallsapp/github-action@v2
+        with:
+          file: covprofile
+          format: golang
