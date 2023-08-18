@@ -27,3 +27,6 @@ jobs:
 
       - name: submit coverage
         uses: coverallsapp/github-action@v2
+        with:
+          file: covprofile
+          format: golang
