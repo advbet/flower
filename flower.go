@@ -93,8 +93,6 @@ func Run(ctx context.Context, opts Options, groups ...ServiceGroup) {
 			wg.Done()
 		}(gctx, prevCancel, groups[i])
 
-		wg.Go(func() {})
-
 		prevCancel = cancel
 	}
 
