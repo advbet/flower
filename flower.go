@@ -45,7 +45,7 @@ type Options struct {
 
 	// AfterServicePanic is a function that is executed when a service
 	// panics.
-	AfterServicePanic func(name string, stack []byte)
+	AfterServicePanic func(name string, val any, stack []byte)
 }
 
 // ServiceGroup represents a group of services where the key is service
@@ -85,7 +85,6 @@ func Run(ctx context.Context, opts Options, groups ...ServiceGroup) {
 			gctx = ctx
 		}
 
-		i := i
 		go func(ctx context.Context, cancel context.CancelFunc, sg ServiceGroup) {
 			sg.run(ctx, opts)
 
@@ -112,7 +111,7 @@ func (sg ServiceGroup) run(ctx context.Context, opts Options) {
 				if val := recover(); val != nil {
 					retry = true
 					if opts.AfterServicePanic != nil {
-						opts.AfterServicePanic(name, debug.Stack())
+						opts.AfterServicePanic(name, val, debug.Stack())
 					}
 				}
 			}()
