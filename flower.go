@@ -85,12 +85,15 @@ func Run(ctx context.Context, opts Options, groups ...ServiceGroup) {
 			gctx = ctx
 		}
 
+		i := i
 		go func(ctx context.Context, cancel context.CancelFunc, sg ServiceGroup) {
 			sg.run(ctx, opts)
 
 			cancel()
 			wg.Done()
 		}(gctx, prevCancel, groups[i])
+
+		wg.Go(func() {})
 
 		prevCancel = cancel
 	}
